@@ -12,7 +12,6 @@
 namespace filewatcher {
 
 Watcher::Watcher(const std::string& path, callback c, LibevLoop* loop) {
-    std::string absolute_path = absolute(path);
     if (!loop) {
         static LibevLoop loop_;
         loop = &loop_;
@@ -20,7 +19,7 @@ Watcher::Watcher(const std::string& path, callback c, LibevLoop* loop) {
     cb_.swap(c);
     state_.set<Watcher, &Watcher::callback_>(this);
     bind(state_, loop);
-    state_.start(absolute_path.c_str());
+    state_.start(path.c_str());
     loop->run_loop();
 }
 
