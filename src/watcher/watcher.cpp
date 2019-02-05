@@ -21,7 +21,7 @@ Watcher::Watcher(const std::string& path, callback c, LibevLoop* loop) {
     state_.set<Watcher, &Watcher::callback_>(this);
     bind(state_, loop);
     state_.start(absolute_path.c_str());
-    loop->run_loop_();
+    loop->run_loop();
 }
 
 Watcher::~Watcher() {
