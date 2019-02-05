@@ -1,3 +1,3 @@
 # filewatcher
 Notify when the file changes
-need libev boost
+need libev, boost
