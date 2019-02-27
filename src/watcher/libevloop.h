@@ -25,7 +25,7 @@ public:
     friend void bind(T& a, LibevLoop* b);
 
 public:
-    void run_loop_();
+    void run_loop();
 
 private:
     ev::dynamic_loop loop_;

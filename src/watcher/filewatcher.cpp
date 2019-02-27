@@ -7,7 +7,6 @@
 #include "filewatcher.h"
 #include "utils/file_util.h"
 
-#include <iostream>
 #include <boost/filesystem.hpp>
 
 namespace filewatcher {

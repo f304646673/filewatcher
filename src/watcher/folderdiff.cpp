@@ -38,6 +38,7 @@ void FolderDiff::diff(PathInfoSet & add, PathInfoSet & remove) {
 
     std::set_difference(path_infos_.begin(), path_infos_.end(),
                     path_infos.begin(), path_infos.end(), std::inserter(remove, remove.begin()));
+    path_infos_ = path_infos;
 }
 
 

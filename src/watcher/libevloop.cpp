@@ -19,13 +19,11 @@ LibevLoop::~LibevLoop() {
     loop_.break_loop(ev::ALL);
 }
 
-void LibevLoop::run_loop_() {
+void LibevLoop::run_loop() {
     if (timed_mutex_.try_lock_for(std::chrono::milliseconds(1))) {
         std::thread t([this]{
             timed_mutex_.lock();
-//            LOG(INFO) << "loop run";
             loop_.run(); 
-//            LOG(INFO) << "loop stoped";
             timed_mutex_.unlock();
         });
         t.detach();
