@@ -46,7 +46,9 @@ private:
 
     void file_watcher_(const std::string& path, FileWatcherAction action);
 
-    void notify_folderwatcher_change_(const PathInfo& pi, bool add);
+    void notify_change_(const PathInfo& pi, bool add);
+
+    void notify_folderwatcher_change_(const PathInfo& pi, WatcherAction action);
     void notify_filewatcher_change_(const PathInfo& pi, WatcherAction action);
 
     void change_filewatchers_(const std::string& path, WatcherAction action);
@@ -57,6 +59,8 @@ private:
     std::shared_ptr<Watcher> watcher_;
 
     std::shared_ptr<FolderDiff> fdiff_;
+
+	std::map<std::string, std::shared_ptr<Watcher>> folder_watchers_;
     std::map<std::string, std::shared_ptr<FileWatcher>> file_watchers_;
 
     std::map<std::string, std::time_t> files_last_modify_time_;

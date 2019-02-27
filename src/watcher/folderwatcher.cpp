@@ -42,15 +42,19 @@ void FolderWatcher::watch_(ev::stat &w, int revents) {
     PathInfoSet remove;
     fdiff_->diff(add, remove);
     for (auto& it : add) {
-        notify_folderwatcher_change_(it, true);
+        notify_change_(it, true);
     }
 
     for (auto& it : remove) {
-        notify_folderwatcher_change_(it, false);
+        notify_change_(it, false);
     }
 }
 
 void FolderWatcher::watch_folder_(const std::string& path) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    folder_watchers_[path] = std::make_shared<Watcher>(path, 
+        std::bind(&FolderWatcher::watch_, this, 
+            std::placeholders::_1, std::placeholders::_2));
 }
 
 void FolderWatcher::watch_file_(const std::string& path){
@@ -67,12 +71,39 @@ void FolderWatcher::file_watcher_(const std::string& path, FileWatcherAction act
     notify_filewatcher_change_(pi, ac);
 }
 
-void FolderWatcher::notify_folderwatcher_change_(const PathInfo& pi, bool add) {
+void FolderWatcher::notify_change_(const PathInfo& pi, bool add) {
     if (pi.type == E_FOLDER) {
-        cb_(pi, add ? NEW : DEL);
+        notify_folderwatcher_change_(pi, add ? NEW : DEL);
     }
     else {
         notify_filewatcher_change_(pi, add ? NEW : DEL);
+    }
+}
+
+void FolderWatcher::notify_folderwatcher_change_(const PathInfo& pi, WatcherAction action) {
+    bool notify = true;
+    if (action == DEL) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        auto it = folder_watchers_.find(pi.path);
+        if (it == folder_watchers_.end()) {
+            notify = false;
+        }
+        else {
+            folder_watchers_.erase(it);
+        }
+    }
+    else if (action == NEW || action == MODIFY) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        auto it = folder_watchers_.find(pi.path);
+        if (it == folder_watchers_.end()) {
+            folder_watchers_[pi.path] = std::make_shared<Watcher>(pi.path, 
+                std::bind(&FolderWatcher::watch_, this, 
+                    std::placeholders::_1, std::placeholders::_2));
+        }
+    }
+    
+    if (notify) {
+        cb_(pi, action);
     }
 }
 
