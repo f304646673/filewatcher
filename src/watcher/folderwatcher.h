@@ -60,7 +60,7 @@ private:
 
     std::shared_ptr<FolderDiff> fdiff_;
 
-	std::map<std::string, std::shared_ptr<Watcher>> folder_watchers_;
+    std::map<std::string, std::shared_ptr<Watcher>> folder_watchers_;
     std::map<std::string, std::shared_ptr<FileWatcher>> file_watchers_;
 
     std::map<std::string, std::time_t> files_last_modify_time_;
